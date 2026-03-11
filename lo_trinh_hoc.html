@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>UMI LAB Dashboard</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+<style>
+
+body{
+font-family:'Plus Jakarta Sans',sans-serif;
+background:#f6fbff;
+}
+
+.sidebar{
+background:#0f3d66;
+}
+
+.card{
+background:white;
+border-radius:20px;
+box-shadow:0 10px 30px rgba(0,0,0,0.05);
+}
+
+.wave-bg{
+background: radial-gradient(circle at 1px 1px, rgba(0,119,190,0.06) 1px, transparent 0);
+background-size:32px 32px;
+}
+
+</style>
+</head>
+
+
+<body class="wave-bg">
+
+
+<div class="flex h-screen">
+
+<!-- SIDEBAR -->
+
+<div class="sidebar w-72 text-white p-6 flex flex-col">
+
+<div class="mb-10">
+<h1 class="text-2xl font-extrabold">UMI LAB</h1>
+<p class="text-xs opacity-70">Ultrasonic AI Research</p>
+</div>
+
+<div class="space-y-3">
+
+<button onclick="showMonth(0)" class="month-btn w-full text-left">Tháng 1–2<br><span class="text-xs opacity-70">Lamb Waves</span></button>
+
+<button onclick="showMonth(1)" class="month-btn w-full text-left">Tháng 3<br><span class="text-xs opacity-70">Wave Scattering</span></button>
+
+<button onclick="showMonth(2)" class="month-btn w-full text-left">Tháng 4<br><span class="text-xs opacity-70">Signal Processing</span></button>
+
+<button onclick="showMonth(3)" class="month-btn w-full text-left">Tháng 5<br><span class="text-xs opacity-70">CNN</span></button>
+
+<button onclick="showMonth(4)" class="month-btn w-full text-left">Tháng 6<br><span class="text-xs opacity-70">LSTM</span></button>
+
+<button onclick="showMonth(5)" class="month-btn w-full text-left">Capstone<br><span class="text-xs opacity-70">PINNs</span></button>
+
+</div>
+
+</div>
+
+
+
+<!-- MAIN CONTENT -->
+
+<div class="flex-1 p-10 overflow-y-auto">
+
+<h2 class="text-3xl font-black text-blue-900 mb-8">
+UMI LAB Learning Roadmap
+</h2>
+
+
+
+<div class="grid grid-cols-3 gap-8">
+
+<div class="col-span-2">
+
+<div id="content" class="card p-8">
+
+<h3 class="text-xl font-bold mb-4">
+Chọn tháng trong sidebar
+</h3>
+
+<p class="text-gray-600">
+Dashboard nghiên cứu Ultrasonic AI.
+</p>
+
+</div>
+
+</div>
+
+
+
+<div class="card p-6">
+
+<h4 class="font-bold mb-4">Research Progress</h4>
+
+<canvas id="progressChart"></canvas>
+
+</div>
+
+
+</div>
+
+
+
+<div class="mt-10 grid grid-cols-3 gap-8">
+
+
+<div class="card p-6">
+
+<h4 class="font-bold mb-2">Physics</h4>
+
+<p class="text-sm text-gray-600">
+Elastic waves  
+Lamb waves  
+Wave scattering  
+Reciprocity theorem
+</p>
+
+</div>
+
+
+<div class="card p-6">
+
+<h4 class="font-bold mb-2">Artificial Intelligence</h4>
+
+<p class="text-sm text-gray-600">
+CNN  
+LSTM  
+Physics Informed Neural Networks
+</p>
+
+</div>
+
+
+<div class="card p-6">
+
+<h4 class="font-bold mb-2">Tools</h4>
+
+<p class="text-sm text-gray-600">
+Python  
+NumPy  
+SciPy  
+Matplotlib  
+PyTorch
+</p>
+
+</div>
+
+
+</div>
+
+
+
+</div>
+
+</div>
+
+
+
+
+<script>
+
+
+const curriculum=[
+
+{
+title:"Lamb Waves",
+text:`
+<b>Mục tiêu</b><br>
+Hiểu propagation của sóng Lamb trong tấm kim loại.<br><br>
+
+<b>Nội dung</b><br>
+Rayleigh-Lamb equation<br>
+Mode S0 và A0<br>
+Dispersion curves<br><br>
+
+<b>Bài tập</b><br>
+Viết code Python vẽ dispersion curves cho tấm nhôm 2mm
+`
+},
+
+{
+title:"Wave Scattering",
+text:`
+<b>Mục tiêu</b><br>
+Hiểu tán xạ khi sóng gặp khuyết tật.<br><br>
+
+<b>Nội dung</b><br>
+Circular cavity scattering<br>
+Angular scattering pattern A(θ)<br>
+Reciprocity theorem<br><br>
+
+<b>Bài tập</b><br>
+Mô phỏng tán xạ lỗ hổng 3mm
+`
+},
+
+{
+title:"Signal Processing",
+text:`
+<b>Mục tiêu</b><br>
+Trích xuất đặc trưng tín hiệu ultrasonic.<br><br>
+
+<b>Nội dung</b><br>
+FFT<br>
+Noise filtering<br>
+Feature extraction<br><br>
+
+<b>Bài tập</b><br>
+Xây dataset 1000 scattering samples
+`
+},
+
+{
+title:"Deep Learning CNN",
+text:`
+<b>Mục tiêu</b><br>
+Dùng CNN nhận diện khuyết tật.<br><br>
+
+<b>Model</b><br>
+1D CNN<br><br>
+
+<b>Input</b><br>
+Raw ultrasonic signals<br><br>
+
+<b>Output</b><br>
+Defect position và defect size
+`
+},
+
+{
+title:"LSTM Wave Prediction",
+text:`
+<b>Mục tiêu</b><br>
+Phân tích propagation theo thời gian.<br><br>
+
+<b>Model</b><br>
+LSTM<br><br>
+
+<b>Bài tập</b><br>
+Dự đoán attenuation của sóng
+`
+},
+
+{
+title:"Physics Informed Neural Networks",
+text:`
+<b>Mục tiêu</b><br>
+Kết hợp physics vào neural network.<br><br>
+
+<b>Loss Function</b><br>
+Data Loss + Physics Loss<br><br>
+
+<b>Dự án</b><br>
+Xây UMI LAB defect prediction system
+`
+}
+
+]
+
+
+
+function showMonth(i){
+
+document.getElementById("content").innerHTML=`
+
+<h3 class="text-xl font-bold mb-4">
+${curriculum[i].title}
+</h3>
+
+<p class="text-gray-700 leading-relaxed">
+${curriculum[i].text}
+</p>
+
+`
+
+}
+
+
+
+const ctx=document.getElementById('progressChart')
+
+new Chart(ctx,{
+type:'radar',
+data:{
+labels:["Physics","DSP","ML","CNN","LSTM","PINNs"],
+datasets:[{
+data:[80,70,60,50,40,30],
+backgroundColor:"rgba(0,119,190,0.2)",
+borderColor:"#0077be",
+borderWidth:2
+}]
+},
+options:{
+plugins:{legend:{display:false}}
+}
+})
+
+
+</script>
+
+
+</body>
+</html>
