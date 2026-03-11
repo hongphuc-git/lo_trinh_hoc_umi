@@ -15,7 +15,7 @@ definePageMeta({
 
 useSeo({
   title: 'UMI LAB Learning Roadmap',
-  description: 'Lộ trình nghiên cứu Ultrasonic AI 6 tháng tại UMI LAB',
+  description: 'Lộ trình nghiên cứu Ultrasonic AI 8 tuần tại UMI LAB',
 })
 
 const categoryBadgeVariant = (cat: string) => {
@@ -36,7 +36,7 @@ const categoryBadgeVariant = (cat: string) => {
         UMI LAB Learning Roadmap
       </h1>
       <p class="mt-2 text-muted-foreground text-lg">
-        Lộ trình nghiên cứu Ultrasonic AI — từ sóng Lamb đến Physics-Informed Neural Networks
+        Lộ trình nghiên cứu 8 tuần — Sóng cơ học, siêu âm, truyền sóng & nhập môn AI
       </p>
     </div>
 

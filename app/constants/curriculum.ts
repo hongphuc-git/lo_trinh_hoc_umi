@@ -1,9 +1,7 @@
 import {
   AudioWaveformIcon,
   BrainCircuitIcon,
-  CpuIcon,
-  NetworkIcon,
-  SignalIcon,
+  BookOpenIcon,
   WavesIcon,
 } from 'lucide-vue-next'
 import type { Component } from 'vue'
@@ -22,116 +20,100 @@ export interface CurriculumModule {
 
 export const CURRICULUM: CurriculumModule[] = [
   {
-    slug: 'lamb-waves',
-    title: 'Tháng 1–2',
-    subtitle: 'Lamb Waves',
+    slug: 'mechanical-waves-ultrasound',
+    title: 'Tuần 1–2',
+    subtitle: 'Sóng cơ học, sóng siêu âm & ứng dụng (NDE)',
     icon: WavesIcon,
     category: 'physics',
-    progress: 80,
-    objective: 'Hiểu propagation của sóng Lamb trong tấm kim loại.',
+    progress: 0,
+    objective:
+      'Tìm hiểu về sóng cơ học, sóng siêu âm và ứng dụng trong kiểm tra không phá huỷ (NDE). Hiểu được sóng, vẽ được dispersion curve.',
     content: [
-      'Rayleigh-Lamb equation',
-      'Mode S0 và A0',
-      'Dispersion curves',
+      'Tổng quan sóng cơ học và sóng siêu âm',
+      'Ứng dụng sóng siêu âm trong NDE (Non-Destructive Evaluation)',
+      'Buổi đầu: Lập trình bài toán sóng Rayleigh',
+      'Giải bài toán dispersion curve',
     ],
-    exercise: 'Viết code Python vẽ dispersion curves cho tấm nhôm 2mm',
+    exercise:
+      'Lập trình Python mô phỏng sóng Rayleigh và vẽ dispersion curve',
   },
   {
-    slug: 'wave-scattering',
-    title: 'Tháng 3',
-    subtitle: 'Wave Scattering',
-    icon: SignalIcon,
-    category: 'physics',
-    progress: 70,
-    objective: 'Hiểu tán xạ khi sóng gặp khuyết tật.',
-    content: [
-      'Circular cavity scattering',
-      'Angular scattering pattern A(θ)',
-      'Reciprocity theorem',
-    ],
-    exercise: 'Mô phỏng tán xạ lỗ hổng 3mm',
-  },
-  {
-    slug: 'signal-processing',
-    title: 'Tháng 4',
-    subtitle: 'Signal Processing',
+    slug: 'ultrasound-seminar',
+    title: 'Tuần 3–4',
+    subtitle: 'Seminar sóng siêu âm & ứng dụng',
     icon: AudioWaveformIcon,
-    category: 'tools',
-    progress: 60,
-    objective: 'Trích xuất đặc trưng tín hiệu ultrasonic.',
+    category: 'physics',
+    progress: 0,
+    objective:
+      'Seminar trình bày về sóng siêu âm và ứng dụng, kết hợp với lập trình minh hoạ.',
     content: [
-      'FFT',
-      'Noise filtering',
-      'Feature extraction',
+      'Chuẩn bị seminar về sóng siêu âm',
+      'Trình bày ứng dụng sóng siêu âm trong thực tế',
+      'Kết hợp code minh hoạ trong seminar',
+      'Thảo luận và phản biện',
     ],
-    exercise: 'Xây dataset 1000 scattering samples',
+    exercise:
+      'Chuẩn bị và trình bày seminar về sóng siêu âm, kèm code minh hoạ',
   },
   {
-    slug: 'cnn',
-    title: 'Tháng 5',
-    subtitle: 'Deep Learning – CNN',
-    icon: CpuIcon,
-    category: 'ai',
-    progress: 50,
-    objective: 'Dùng CNN nhận diện khuyết tật.',
+    slug: 'wave-propagation-isotropic',
+    title: 'Tuần 5–6',
+    subtitle: 'Nguyên lý truyền sóng cơ học & Isotropic',
+    icon: BookOpenIcon,
+    category: 'physics',
+    progress: 0,
+    objective:
+      'Nhập môn nguyên lý truyền sóng cơ học trong vật liệu isotropic. Nắm vững các khái niệm toán-lý nền tảng.',
     content: [
-      '1D CNN architecture',
-      'Input: Raw ultrasonic signals',
-      'Output: Defect position và defect size',
+      'Tensor ứng suất và biến dạng',
+      'Phương trình đạo hàm riêng (PDE) trong truyền sóng',
+      'Vật liệu isotropic và các tính chất cơ học',
+      'Mối liên hệ ứng suất–biến dạng (Hooke\'s Law)',
     ],
-    exercise: 'Huấn luyện CNN trên dataset tín hiệu ultrasonic',
+    exercise:
+      'Giải bài tập về tensor, ứng suất biến dạng và đạo hàm riêng áp dụng trong truyền sóng',
   },
   {
-    slug: 'lstm',
-    title: 'Tháng 6',
-    subtitle: 'LSTM Wave Prediction',
-    icon: NetworkIcon,
-    category: 'ai',
-    progress: 40,
-    objective: 'Phân tích propagation theo thời gian.',
-    content: [
-      'LSTM architecture',
-      'Sequence-to-sequence prediction',
-      'Time-series wave data',
-    ],
-    exercise: 'Dự đoán attenuation của sóng',
-  },
-  {
-    slug: 'pinns',
-    title: 'Capstone',
-    subtitle: 'Physics Informed Neural Networks',
+    slug: 'intro-ai',
+    title: 'Tuần 7–8',
+    subtitle: 'Tìm hiểu về AI',
     icon: BrainCircuitIcon,
     category: 'ai',
-    progress: 30,
-    objective: 'Kết hợp physics vào neural network.',
+    progress: 0,
+    objective:
+      'Bắt đầu tìm hiểu về trí tuệ nhân tạo (AI), làm quen với các khái niệm cơ bản và công cụ Machine Learning.',
     content: [
-      'Data Loss + Physics Loss',
-      'PDE-constrained optimization',
-      'UMI LAB defect prediction system',
+      'Tổng quan về AI và Machine Learning',
+      'Các thuật toán ML cơ bản (regression, classification)',
+      'Giới thiệu neural networks',
+      'Công cụ: Python, NumPy, PyTorch/TensorFlow cơ bản',
     ],
-    exercise: 'Xây UMI LAB defect prediction system hoàn chỉnh',
+    exercise:
+      'Thực hành các bài toán ML cơ bản với Python',
   },
 ]
 
 export const RADAR_DATA = {
-  labels: ['Physics', 'DSP', 'ML', 'CNN', 'LSTM', 'PINNs'],
-  values: [80, 70, 60, 50, 40, 30],
+  labels: ['Sóng cơ học', 'Siêu âm NDE', 'Truyền sóng', 'AI/ML'],
+  values: [0, 0, 0, 0],
 }
 
 export const CATEGORIES = [
   {
     name: 'Physics',
-    description: 'Elastic waves, Lamb waves, Wave scattering, Reciprocity theorem',
+    description:
+      'Sóng cơ học, sóng Rayleigh, dispersion curve, truyền sóng trong vật liệu isotropic, tensor ứng suất biến dạng',
     color: 'text-blue-500',
   },
   {
     name: 'Artificial Intelligence',
-    description: 'CNN, LSTM, Physics Informed Neural Networks',
+    description:
+      'Machine Learning cơ bản, neural networks, Python, NumPy, PyTorch',
     color: 'text-purple-500',
   },
   {
     name: 'Tools',
-    description: 'Python, NumPy, SciPy, Matplotlib, PyTorch',
+    description: 'Python, NumPy, SciPy, Matplotlib, seminar & trình bày',
     color: 'text-emerald-500',
   },
 ]
