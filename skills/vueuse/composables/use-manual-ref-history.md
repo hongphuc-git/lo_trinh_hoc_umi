@@ -1,6 +1,6 @@
 # useManualRefHistory
 
-Manually track the change history of a ref when the using calls , also provides undo and redo functionality
+Manually track the change history of a ref when the user calls , also provides undo and redo functionality
 
 **Package:** `@vueuse/core`
 **Category:** State

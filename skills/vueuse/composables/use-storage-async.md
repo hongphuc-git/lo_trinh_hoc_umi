@@ -1,6 +1,6 @@
 # useStorageAsync
 
-Reactive Storage in with async support.
+Reactive Storage with async support.
 
 **Package:** `@vueuse/core`
 **Category:** State
