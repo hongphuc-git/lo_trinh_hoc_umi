@@ -1,105 +1,85 @@
-# Route Protection
+# Route protection
 
-Three layers of protection: route rules, page meta, and server middleware.
+## Layers
 
-## Route Rules (Global)
+1. `routeRules` or `nitro.routeRules` for broad app sections
+2. `definePageMeta({ auth })` for page-level overrides
+3. `requireUserSession(event)` for server-side enforcement
 
-Define auth requirements in `nuxt.config.ts`:
+Use route rules and page meta for navigation UX. Use `requireUserSession(event)` for protected API routes and mutations.
+
+## Common route rules
 
 ```ts
 export default defineNuxtConfig({
   routeRules: {
-    '/admin/**': { auth: { user: { role: 'admin' } } },
-    '/dashboard/**': { auth: 'user' },
-    '/login': { auth: 'guest' },
-    '/public/**': { auth: false }
-  }
+    '/app/**': { auth: { only: 'user', redirectTo: '/login' } },
+    '/login': { auth: { only: 'guest', redirectTo: '/app' } },
+    '/admin/**': { auth: { only: 'user', user: { role: 'admin' } } },
+  },
 })
 ```
 
-## Auth Modes
+The same auth keys work under `nitro.routeRules`. If both `routeRules` and `nitro.routeRules` are set, the module reads `nitro.routeRules`.
 
-| Mode              | Behavior                                               |
-| ----------------- | ------------------------------------------------------ |
-| `'user'`          | Requires authenticated user                            |
-| `'guest'`         | Only unauthenticated users (redirects logged-in users) |
-| `{ user: {...} }` | Requires user matching specific properties             |
-| `false`           | No protection                                          |
+## Matching
 
-## Page Meta (Per-Page)
+- `'user'`: authenticated users only
+- `'guest'`: unauthenticated users only
+- `{ user: { ... } }`: user must match fields
+- arrays inside a field mean OR matching
+- multiple fields mean AND matching
+- `false`: disable auth for that route/page
 
-Override or define auth for specific pages:
+The string forms remain available as shorthand. `auth: 'user'` redirects to the configured login fallback, and `auth: 'guest'` redirects to the configured guest fallback.
 
-```vue
-<script setup>
-// Require authentication
-definePageMeta({ auth: 'user' })
-</script>
-```
-
-```vue
-<script setup>
-// Require admin role
-definePageMeta({
-  auth: { user: { role: 'admin' } }
-})
-</script>
-```
-
-```vue
-<script setup>
-// Guest-only (login page)
-definePageMeta({ auth: 'guest' })
-</script>
-```
-
-## User Property Matching
+## Redirects
 
 ```ts
-// Single value
-{ auth: { user: { role: 'admin' } } }
-
-// OR logic (array)
-{ auth: { user: { role: ['admin', 'moderator'] } } }
-
-// AND logic (multiple fields)
-{ auth: { user: { role: 'admin', verified: true } } }
-```
-
-## Redirect Configuration
-
-```ts
-// nuxt.config.ts
 export default defineNuxtConfig({
   auth: {
     redirects: {
-      login: '/login',    // Where to redirect unauthenticated users
-      guest: '/dashboard' // Where to redirect logged-in users from guest pages
-    }
-  }
+      login: '/login',
+      guest: '/',
+      authenticated: '/app',
+      logout: '/goodbye',
+    },
+    preserveRedirect: true,
+    redirectQueryKey: 'redirect',
+  },
 })
 ```
 
-## Server Middleware
+- Per-route `redirectTo` takes precedence over `auth.redirects.login` and `auth.redirects.guest`.
+- A validated local redirect query takes precedence over `auth.redirects.authenticated` after sign-in or sign-up.
+- `auth.redirects.logout` applies after sign-out unless the caller supplies `onSuccess`.
 
-Auth middleware runs on all `/api/**` routes matching `routeRules`.
+## Broad rules and internals
 
-For custom API protection, use `requireUserSession()`:
+Broad rules such as `'/**': { auth: 'user' }` intentionally skip framework and module internals that must stay reachable:
 
-```ts
-// server/api/admin/[...].ts
-export default defineEventHandler(async (event) => {
-  await requireUserSession(event, { user: { role: 'admin' } })
-  // Handle request
+- `/_nuxt/**`
+- `/_ipx/**`
+- `/__nuxt_devtools__/**`
+- `/__better-auth-devtools`
+- `/api/auth/**`
+- `/api/_better-auth/**`
+- `/api/_nuxt_icon/**`
+
+The same broad rules still apply to app-owned pages and app-owned `/api/**` handlers.
+
+## Page meta
+
+```vue
+<script setup lang="ts">
+definePageMeta({
+  auth: {
+    only: 'user',
+    redirectTo: '/login',
+    user: { role: ['admin', 'owner'] },
+  },
 })
+</script>
 ```
 
-## Priority Order
-
-1. `definePageMeta({ auth })` - highest priority
-2. `routeRules` patterns - matched by path
-3. Default: no protection
-
-## Prerendered Pages
-
-Auth checks skip during prerender hydration. Session fetched client-side after hydration completes.
+Page meta overrides global route rules for that page.

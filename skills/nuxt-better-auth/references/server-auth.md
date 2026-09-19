@@ -1,135 +1,98 @@
-# Server-Side Authentication
+# Server-side authentication
 
-## serverAuth()
+## Helpers
 
-Get the Better Auth instance for advanced operations:
+These helpers are auto-imported inside `server/` in full mode:
 
-```ts
-// server/api/custom.ts
-export default defineEventHandler(async (event) => {
-  const auth = serverAuth()
-  // Access full Better Auth API
-  const sessions = await auth.api.listSessions({ headers: event.headers })
-  return sessions
-})
-```
+- `serverAuth(event?)`
+- `getUserSession(event)`
+- `getRequestSession(event)`
+- `setRequestSession(event, session)`
+- `refreshSessionCookieCache(event)`
+- `requireUserSession(event, options?)`
+- `createSession(event, userId)`
+- `setSessionCookie(event, token)`
 
-Module-level singleton (safe to call multiple times - returns cached instance).
+## Which helper to use
 
-### Available Server Methods
+| Need                                                                  | Helper                                |
+| --------------------------------------------------------------------- | ------------------------------------- |
+| Access raw Better Auth APIs                                           | `serverAuth(event)`                   |
+| Read session if it exists                                             | `getUserSession(event)`               |
+| Reuse the same session lookup in one request                          | `getRequestSession(event)`            |
+| Supply a session resolved by trusted server authentication            | `setRequestSession(event, session)`   |
+| Refresh Better Auth's cached session cookie after server-side updates | `refreshSessionCookieCache(event)`    |
+| Enforce auth                                                          | `requireUserSession(event, options?)` |
+| Create a session in a custom flow                                     | `createSession(event, userId)`        |
+| Attach a session token cookie manually                                | `setSessionCookie(event, token)`      |
 
-Via `serverAuth().api`:
-
-```ts
-const auth = serverAuth()
-
-// Session management
-await auth.api.listSessions({ headers: event.headers })
-await auth.api.revokeSession({ sessionId: 'xxx' }, { headers: event.headers })
-await auth.api.revokeOtherSessions({ headers: event.headers })
-await auth.api.revokeSessions({ headers: event.headers })
-
-// User management (with admin plugin)
-await auth.api.setRole({ userId: 'xxx', role: 'admin' }, { headers: event.headers })
-```
-
-## getUserSession()
-
-Get current session without throwing (returns null if not authenticated):
+## Common API protection
 
 ```ts
 export default defineEventHandler(async (event) => {
-  const result = await getUserSession(event)
-  if (!result) {
-    return { guest: true }
-  }
-  return { user: result.user }
-})
-```
+  const { user } = await requireUserSession(event, {
+    user: { role: 'admin' },
+  })
 
-Returns `{ user: AuthUser, session: AuthSession } | null`.
-
-## requireUserSession()
-
-Enforce authentication - throws if not authenticated:
-
-```ts
-export default defineEventHandler(async (event) => {
-  const { user, session } = await requireUserSession(event)
-  // user and session are guaranteed to exist
   return { userId: user.id }
 })
 ```
 
-- Throws `401` if not authenticated
-- Throws `403` if user matching fails
+`requireUserSession(event)` throws `401` when unauthenticated and `403` when the user match or custom rule fails.
 
-## User Matching
+## Supply a verified request session
 
-Restrict access based on user properties:
+Use `setRequestSession(event, session)` when another server authentication layer verifies the request and resolves a complete `AppSession` for existing session helpers to reuse.
 
 ```ts
-// Single value - exact match
-await requireUserSession(event, {
-  user: { role: 'admin' }
-})
+const claims = await verifyBearerToken(event)
+const session = await resolveCurrentAppSession(claims)
 
-// Array - OR logic (any value matches)
-await requireUserSession(event, {
-  user: { role: ['admin', 'moderator'] }
-})
+setRequestSession(event, session)
+await requireUserSession(event)
+```
 
-// Multiple fields - AND logic (all must match)
-await requireUserSession(event, {
-  user: { role: 'admin', verified: true }
+The supplied value applies only to the current request and does not set a session cookie. Authenticate the value and enforce bearer-token audience and scope restrictions before calling the helper.
+
+## Refresh cached session data
+
+Use `refreshSessionCookieCache(event)` after server-side code updates data returned by `auth.api.getSession()`, `getUserSession(event)`, or `getRequestSession(event)`.
+
+```ts
+export default defineEventHandler(async (event) => {
+  await updateCurrentUserProfile(event)
+  await refreshSessionCookieCache(event)
+
+  return { ok: true }
 })
 ```
 
-## Custom Rules
+The helper refreshes the cached session cookie and the request-scoped `getRequestSession(event)` memo. It does not update the user or session record; do that first.
 
-For complex validation logic:
+## Matching rules
+
+- scalar value: exact match
+- array value: OR match
+- multiple fields: AND match
+- `rule`: custom callback for logic field matching cannot express
 
 ```ts
 await requireUserSession(event, {
-  rule: ({ user, session }) => {
-    return user.subscription?.active && user.points > 100
-  }
-})
-
-// Combined with user matching
-await requireUserSession(event, {
-  user: { verified: true },
-  rule: ({ user }) => user.subscription?.plan === 'pro'
+  user: { role: ['admin', 'owner'] },
+  rule: ({ user }) => user.verified === true,
 })
 ```
 
-## Pattern Examples
+## Custom server auth flow
 
 ```ts
-// Admin-only endpoint
 export default defineEventHandler(async (event) => {
-  const { user } = await requireUserSession(event, {
-    user: { role: 'admin' }
-  })
-  return getAdminData()
-})
+  const userId = await verifyCustomLogin(event)
+  const session = await createSession(event, userId)
+  await setSessionCookie(event, session.token)
 
-// Premium feature
-export default defineEventHandler(async (event) => {
-  await requireUserSession(event, {
-    rule: ({ user }) => ['pro', 'enterprise'].includes(user.plan)
-  })
-  return getPremiumContent()
-})
-
-// Owner-only resource
-export default defineEventHandler(async (event) => {
-  const id = getRouterParam(event, 'id')
-  const { user } = await requireUserSession(event)
-  const resource = await getResource(id)
-  if (resource.ownerId !== user.id) {
-    throw createError({ statusCode: 403 })
-  }
-  return resource
+  return { ok: true }
 })
 ```
+
+`setSessionCookie(event, token)` sets the Better Auth session token cookie only. It does not recreate every Better Auth sign-in side effect.
